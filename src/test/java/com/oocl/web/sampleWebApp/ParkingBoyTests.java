@@ -26,29 +26,25 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class SampleWebAppApplicationTests {
+public class ParkingBoyTests {
     @Autowired
     private ParkingBoyRepository parkingBoyRepository;
 
     @Autowired
     private MockMvc mvc;
 
-	@Test
-	public void should_get_parking_boys() throws Exception {
-	    // Given
-        final ParkingBoy boy = parkingBoyRepository.save(new ParkingBoy("boy"));
+    @Test
+    public void post_should_return_201() throws Exception {
+        // Given
+        final String employeeID = "new employee 1";
+        final ParkingBoyRequest parkingBoyRequest = new ParkingBoyRequest(employeeID);
 
         // When
-        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-            .get("/parkingboys"))
-            .andReturn();
-
-        // Then
-        assertEquals(200, result.getResponse().getStatus());
-
-        final ParkingBoyResponse[] parkingBoys = getContentAsObject(result, ParkingBoyResponse[].class);
-
-        assertEquals(1, parkingBoys.length);
-        assertEquals("boy", parkingBoys[0].getEmployeeId());
+        final String expected = "Parking Boy created.";
+        mvc.perform(MockMvcRequestBuilders
+                .post("/parkingboys")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(parkingBoyRequest)))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 }
